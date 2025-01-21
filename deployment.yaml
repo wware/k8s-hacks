@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookreview-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookreview-api
+  template:
+    metadata:
+      labels:
+        app: bookreview-api
+    spec:
+      containers:
+      - name: api
+        image: bookreview-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookreview-service
+spec:
+  selector:
+    app: bookreview-api
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: NodePort
