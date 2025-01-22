@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: bookreview-api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: bookreview-api
@@ -14,19 +14,19 @@ spec:
     spec:
       containers:
       - name: api
-        image: bookreview-api:latest
-        imagePullPolicy: Never
+        image: 222634358787.dkr.ecr.us-east-1.amazonaws.com/bookreview-api:latest
+        imagePullPolicy: Always  # This is important!
         ports:
         - containerPort: 8000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bookreview-service
-spec:
-  selector:
-    app: bookreview-api
-  ports:
-  - port: 80
-    targetPort: 8000
-  type: NodePort
+        env:
+        - name: DB_HOST
+          value: "bookreview-db.clk40aommbmi.us-east-1.rds.amazonaws.com"
+        - name: DB_USER
+          value: "admin"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+        - name: DB_NAME
+          value: "bookreview"

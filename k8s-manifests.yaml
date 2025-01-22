@@ -1,0 +1,68 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookreview-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bookreview-api
+  template:
+    metadata:
+      labels:
+        app: bookreview-api
+    spec:
+      containers:
+      - name: api
+        image: bookreview-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_HOST
+          value: "bookreview-db.clk40aommbmi.us-east-1.rds.amazonaws.com"
+        - name: DB_USER
+          value: "admin"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+        - name: DB_NAME
+          value: "bookreview"
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookreview-service
+spec:
+  selector:
+    app: bookreview-api
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: NodePort
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookreview-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bookreview-service
+            port:
+              number: 80
