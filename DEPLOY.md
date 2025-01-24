@@ -16,7 +16,7 @@
 3. Build and push the Docker image to ECR:
    ```bash
    # Get the ECR repository URI
-   ECR_REPO_URI=$(aws ecr describe-repositories --repository-names bookreview-api --query 'repositories[0].repositoryUri' --output text)
+   export ECR_REPO_URI=$(aws ecr describe-repositories --repository-names bookreview-api --query 'repositories[0].repositoryUri' --output text)
 
    docker build -t $ECR_REPO_URI:latest .
    aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REPO_URI
@@ -36,21 +36,21 @@
 6. Verify the ALB listener configuration:
    ```bash
    # Get the ALB name 
-   ALB_NAME=$(kubectl get ingress bookreview-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' | cut -d '-' -f 1)
+   export ALB_NAME=$(kubectl get ingress bookreview-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' | cut -d '-' -f 1)
 
-   ALB_ARN=$(aws elbv2 describe-load-balancers --names $ALB_NAME --query 'LoadBalancers[0].LoadBalancerArn' --output text)
+   export ALB_ARN=$(aws elbv2 describe-load-balancers --names $ALB_NAME --query 'LoadBalancers[0].LoadBalancerArn' --output text)
    aws elbv2 describe-listeners --load-balancer-arn $ALB_ARN
    ```
 
 7. Check target group health:
    ```bash
-   TG_ARN=$(aws elbv2 describe-target-groups --load-balancer-arn $ALB_ARN --query 'TargetGroups[0].TargetGroupArn' --output text) 
+   export TG_ARN=$(aws elbv2 describe-target-groups --load-balancer-arn $ALB_ARN --query 'TargetGroups[0].TargetGroupArn' --output text) 
    aws elbv2 describe-target-health --target-group-arn $TG_ARN
    ```
 
 8. Access the application via the ALB URL:
    ```bash
-   ALB_URL=$(kubectl get ingress bookreview-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+   export ALB_URL=$(kubectl get ingress bookreview-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
    echo "Application URL: http://$ALB_URL"
    ```
 

@@ -15,9 +15,16 @@ spec:
       containers:
       - name: api
         image: 222634358787.dkr.ecr.us-east-1.amazonaws.com/bookreview-api:latest
-        imagePullPolicy: Always  # This is important!
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
         env:
         - name: DB_HOST
           value: "bookreview-db.clk40aommbmi.us-east-1.rds.amazonaws.com"

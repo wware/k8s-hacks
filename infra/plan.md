@@ -1,10 +1,13 @@
 ## When I do this
 
 ```
-terraform play -out=Plan >& ZZ
-sed -r "s/\x1B\[[0-9;]*[mG]//g" < ZZ > YY
-# YY was used to generate this file
+terraform plan -out=Plan 2>&1 | sed -r "s/\x1B\[[0-9;]*[mG]//g" > YY
+export TF_VAR_db_password="your-password-here"
+terraform apply Plan
 ```
+
+The file `YY` was used to generate this file.
+
 ## I get this
 
 ```
