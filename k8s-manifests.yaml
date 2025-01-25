@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: bookreview-api:latest
+        image: 222634358787.dkr.ecr.us-east-1.amazonaws.com/bookreview-api:latest
         ports:
         - containerPort: 8000
         env:
