@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bookreview-config
-data:
-  DATABASE_URL: "sqlite:///./books.db"

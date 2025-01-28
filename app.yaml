@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-review-api
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30000
+  selector:
+    app: book-review-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-review-api
+spec:
+  selector:
+    matchLabels:
+      app: book-review-api
+  template:
+    metadata:
+      labels:
+        app: book-review-api
+    spec:
+      containers:
+        - name: book-review-api
+          image: book-review-api:latest
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: book-review-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: book-review-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: book-review-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: book-review-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: book-review-secrets
+                  key: DB_PASSWORD
