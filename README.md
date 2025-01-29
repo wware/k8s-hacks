@@ -12,6 +12,17 @@ on Kubernetes using Minikube. It implements a simple book management system with
 
 ## Project Structure
 
+- `server.js` - Main application entry point
+- `routes/books.js` - Book-related route handlers
+- `models/book.js` - Book model definition
+- `*.yaml` - Kubernetes manifests:
+  - `configmap.yaml` - Database configuration
+  - `secret.yaml` - Sensitive credentials
+  - `postgres.yaml` - PostgreSQL deployment and service
+  - `app.yaml` - API deployment and service
+- `start.sh` - Deployment script
+- `test-api.sh` - API test script
+
 ```
 .
 ├── app.js           # Express application
@@ -67,16 +78,18 @@ minikube service bookreview-service --url
 
 ## API Endpoints
 
-- `GET /`: Health check endpoint
-- `GET /books`: List all books
-- `POST /books`: Create a new book
-- `GET /books/:id`: Get a specific book
+- `GET /` - API information
+- `GET /api/books` - List all books
+- `POST /api/books` - Create a new book
+- `GET /api/books/:id` - Get a specific book
+- `PUT /api/books/:id` - Update a book
+- `DELETE /api/books/:id` - Delete a book
 
 Example usage:
 ```bash
 # Create a new book
 curl -X POST \
-  "$(minikube service bookreview-service --url)/books" \
+  "$(minikube service bookreview-service --url)/api/books" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "The Hitchhikers Guide to the Galaxy",
@@ -84,7 +97,7 @@ curl -X POST \
   }'
 
 # List all books
-curl "$(minikube service bookreview-service --url)/books"
+curl "$(minikube service bookreview-service --url)/api/books"
 ```
 
 ## Kubernetes Configuration
@@ -114,9 +127,35 @@ To modify the application:
 2. Rebuild the Docker image
 3. Reapply the Kubernetes deployment
 
+To start fresh:
+```bash
+minikube delete
+./start.sh
+```
+
 ## Troubleshooting
 
 - Check pod status: `kubectl get pods`
 - View pod logs: `kubectl logs -l app=bookreview-api`
 - Pod details: `kubectl describe pod <pod-name>`
 - Service details: `kubectl describe service bookreview-service`
+
+This will:
+- Start Minikube
+- Build the Docker image
+- Deploy to Kubernetes:
+  - Database configuration (configmap.yaml)
+  - Credentials (secret.yaml)
+  - PostgreSQL database (postgres.yaml)
+  - Book Review API (app.yaml)
+- Wait for services to be ready
+- Run automated tests
+- Open the service in your browser
+
+## Testing
+
+The API can be tested using the included test script:
+
+```bash
+./test-api.sh
+```
