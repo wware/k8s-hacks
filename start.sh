@@ -27,6 +27,9 @@ kubectl wait --for=condition=ready pod -l app=postgres --timeout=120s
 echo "⏳ Waiting for Book Review API to be ready..."
 kubectl wait --for=condition=ready pod -l app=book-review-api --timeout=120s
 
+echo "🧪 Running API tests..."
+./test-api.sh
+
 echo "🚀 Opening service in browser..."
 minikube service book-review-api
 
